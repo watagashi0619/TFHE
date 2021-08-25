@@ -140,7 +140,7 @@ std::array<T, params::N> multiply(std::array<T1, params::N> a, std::array<T2, pa
 // TRLWE
 // (a,b) in (T_N[X],T_N[X])
 struct trlwe {
-    std::array<torus, params::N> a, b;  // a=a[X]=\sum_k=1^N a_kX^k のキモチ
+    std::array<torus, params::N> a, b;
 
     // encrypt_polynomial_torus: message in T_N[X] -> trlwe
     static trlwe encrypt_polynomial_torus(secret_key skey, std::array<torus, params::N> m) {
@@ -184,7 +184,7 @@ struct trlwe {
             if(m[i]) {
                 m_binary[i] = mu;
             } else {
-                m_binary[i] = mu * 7;  // -mu;
+                m_binary[i] = -mu;
             }
         }
         return encrypt_polynomial_torus(skey, m_binary);
@@ -198,7 +198,7 @@ struct trlwe {
             s[i] = skey.lvl1[i];
         }
 
-        std::array<torus, N> m;
+        std::array<int, N> m;
         std::array<torus, N> as = multiply<torus>(a, s);
         for(size_t i = 0; i < N; i++) {
             m[i] = b[i] - as[i];
@@ -249,7 +249,7 @@ struct trgsw {
         trgsw trgsw;
 
         for(size_t i = 0; i < 2 * l; i++) {
-            trgsw.secret_message[i] = trlwe::encrypt_polynomial_zero(skey);
+            trgsw[i] = trlwe::encrypt_polynomial_zero(skey);
         }
 
         // trgsw[i].a += mu[X]/Bg^(i+1)
@@ -259,9 +259,9 @@ struct trgsw {
         // mu[X] 2^32 Bg^(-i-1)=x mod 2^32-1
         for(size_t i = 0; i < l; i++) {
             for(size_t j = 0; j < N; j++) {
-                torus t = static_cast<torus>(mu[j]) * (1 << (32 - Bgbit * (i + 1)));
-                trgsw.secret_message[i].a[j] += t;
-                trgsw.secret_message[i + l].b[j] += t;
+                torus t = static_cast<torus>(mu[j]) * (1u << (32 - Bgbit * (i + 1)));
+                trgsw[i].a[j] += t;
+                trgsw[i + l].b[j] += t;
             }
         }
 
@@ -275,13 +275,6 @@ struct trgsw {
         //  )
         return trgsw;
     }
-
-    // encrypt_binary: mu in B -> trgsw
-    static trgsw encrypt_binary(secret_key skey, bool mu) {
-        std::array<int, params::N> t = {};
-        t[0] = mu ? 1 : 0;
-        return encrypt_polynomial_int(skey, t);
-    }
 };
 
 // decomposition:a[X] in T_N[X] -> a_bar[X] in (Z_N[X])^l
@@ -290,22 +283,29 @@ std::array<std::array<int, params::N>, params::l> decomposition(std::array<torus
     constexpr size_t l = params::l;
     constexpr size_t Bgbit = params::Bgbit;
     constexpr torus Bg = params::Bg;
+
     torus roundoffset = 1 << (32 - l * Bgbit - 1);
 
     // naive impl
-    std::array<std::array<int, N>, l> a_bar, a_hat;
+    std::array<std::array<int, N>, l> a_bar;
+    std::array<std::array<torus, N>, l> a_hat;
+
     for(size_t i = 0; i < l; i++) {
         for(size_t j = 0; j < N; j++) {
             a_hat[i][j] = ((a[j] + roundoffset) >> (32 - Bgbit * (i + 1))) & (Bg - 1);
         }
     }
-    for(size_t i = l - 1; i > 0; i--) {
-        for(size_t j = 0; j < N; j++) {
+
+    int carry = 0;
+    for(size_t j = 0; j < N; j++) {
+        for(int i = l - 1; i >= 0; i--) {
+            a_hat[i][j] += carry;
             if(a_hat[i][j] >= Bg / 2) {
                 a_bar[i][j] = a_hat[i][j] - Bg;
-                a_hat[i - 1][j] += 1;
+                carry = 1;
             } else {
                 a_bar[i][j] = a_hat[i][j];
+                carry = 0;
             }
         }
     }
@@ -402,6 +402,73 @@ void test_hom_nand() {
     }
 }
 
+// trlwe test
+void test_trlwe() {
+    std::cout << "trlwe" << std::endl;
+
+    secret_key skey;
+
+    // message
+    std::array<bool, params::N> message;
+    for(size_t i = 0; i < params::N; i++) {
+        message[i] = binary_uniform_distribution();
+    }
+
+    // encrypt message to trlwe
+    trlwe test_trlwe = trlwe::encrypt_polynomial_binary(skey, message);
+
+    // decrypt trlwe
+    std::array<bool, params::N> res = test_trlwe.decrypt_polynomial_binary(skey);
+
+    for(size_t i = 0; i < params::N; i++) {
+        // res should be equal to message
+        if(message[i] != res[i]) {
+            std::cout << "FAILED!" << std::endl;
+            exit(0);
+        }
+    }
+    std::cout << "pass" << std::endl;
+}
+
+// extermal product test
+void test_external_product() {
+    std::cout << "external_product" << std::endl;
+
+    secret_key skey;
+
+    // message (to be trlwe)
+    std::array<bool, params::N> message;
+    for(size_t i = 0; i < params::N; i++) {
+        message[i] = binary_uniform_distribution();
+    }
+
+    // encrypt message to trlwe
+    trlwe test_trlwe = trlwe::encrypt_polynomial_binary(skey, message);
+
+    // mu "1" (to be trgsw)
+    std::array<int, params::N> mu = {1};
+
+    // encrypt mu to trgsw
+    trgsw test_trgsw = trgsw::encrypt_polynomial_int(skey, mu);
+
+    // res is the result of the external product
+    trlwe res = external_product(test_trgsw, test_trlwe);
+
+    // decrypt res
+    std::array<bool, params::N> res_decrypt = res.decrypt_polynomial_binary(skey);
+
+    for(size_t i = 0; i < params::N; i++) {
+        // res should be equal to message
+        if(message[i] != res_decrypt[i]) {
+            std::cout << "FAILED!" << std::endl;
+            exit(0);
+        }
+    }
+    std::cout << "pass" << std::endl;
+}
+
 int main() {
-    test_hom_nand();
+    // test_hom_nand();
+    // test_trlwe();
+    test_external_product();
 }
