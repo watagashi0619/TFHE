@@ -15,4 +15,8 @@ constexpr uint32_t Bgbit = 6;
 constexpr uint32_t Bg = 1 << 6;
 constexpr uint32_t l = 3;
 
+// Blind Rotate Params
+
+constexpr uint32_t Nbit = 10;
+
 }  // namespace params

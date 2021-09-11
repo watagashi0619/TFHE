@@ -8,6 +8,7 @@
 
 // TRLWE
 // (a,b) in (T_N[X],T_N[X])
+namespace TFHE {
 
 struct trlwe {
     trlwe();
@@ -17,7 +18,9 @@ struct trlwe {
     static trlwe encrypt_polynomial_zero(secret_key skey);
     static trlwe encrypt_polynomial_binary(secret_key skey, std::array<bool, params::N> m);
     std::array<bool, params::N> decrypt_polynomial_binary(secret_key skey);
-
-    static tlwe_lvl1 sample_extract_index(trlwe trlwe, size_t k);
-    static std::array<std::array<int, params::N>, params::l> decomposition(std::array<torus, params::N> a);
 };
+
+tlwe_lvl1 sample_extract_index(trlwe trlwe, size_t k);
+std::array<std::array<int, params::N>, params::l> decomposition(std::array<torus, params::N> a);
+
+}  // namespace TFHE

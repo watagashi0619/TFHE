@@ -6,6 +6,8 @@
 #include "key.hpp"
 #include "util.hpp"
 
+namespace TFHE {
+
 template <int lvl>
 struct tlwe {
     tlwe();
@@ -29,3 +31,5 @@ constexpr size_t tlwe<lvl>::N() {
 
 using tlwe_lvl0 = tlwe<0>;
 using tlwe_lvl1 = tlwe<1>;
+
+}

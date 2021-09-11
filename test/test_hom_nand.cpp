@@ -9,6 +9,8 @@
 #include "trlwe.hpp"
 #include "util.hpp"
 
+using namespace TFHE;
+
 // hom_nand
 tlwe_lvl0 hom_nand(tlwe_lvl0 tlwe1, tlwe_lvl0 tlwe2) {
     size_t n = params::n;

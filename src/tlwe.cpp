@@ -7,6 +7,8 @@
 #include "params.hpp"
 #include "util.hpp"
 
+namespace TFHE {
+
 template <int lvl>
 tlwe<lvl>::tlwe() {}
 
@@ -57,3 +59,6 @@ bool tlwe<lvl>::decrypt_binary(secret_key skey) {
 template tlwe<0> tlwe<0>::encrypt_binary(secret_key skey, bool m);
 template tlwe<1> tlwe<1>::encrypt_binary(secret_key skey, bool m);
 template bool tlwe<0>::decrypt_binary(secret_key skey);
+template bool tlwe<1>::decrypt_binary(secret_key skey);
+
+}  // namespace TFHE

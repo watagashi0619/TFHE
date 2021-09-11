@@ -9,6 +9,8 @@
 #include "trlwe.hpp"
 #include "util.hpp"
 
+using namespace TFHE;
+
 // extermal product test
 void test_external_product() {
     std::cout << "external_product" << std::endl;
@@ -36,7 +38,7 @@ void test_external_product() {
         trgsw test_trgsw = trgsw::encrypt_polynomial_int(skey, mu);
 
         // res is the result of the external product
-        trlwe res = trgsw::external_product(test_trgsw, test_trlwe);
+        trlwe res = external_product(test_trgsw, test_trlwe);
 
         // decrypt res
         std::array<bool, params::N> res_decrypt = res.decrypt_polynomial_binary(skey);
@@ -44,7 +46,7 @@ void test_external_product() {
         for(size_t i = 0; i < params::N; i++) {
             // when mu=1, res should be equal to message
             // when mu=-1, res shouldn't be equal to message
-            if(message[i] ^ res_decrypt[i] == (x > 0)) {
+            if((message[i] ^ res_decrypt[i]) == (x > 0)) {
                 std::cout << "FAILED!" << std::endl;
                 exit(0);
             }

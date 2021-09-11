@@ -11,6 +11,7 @@
 
 // TRGSW
 // trlwe^(2l) = [(a_0[X],b_0[X]),...,(a_{2l-1}[X],b_{2l-1}[X])]
+namespace TFHE {
 
 trgsw::trgsw() {}
 
@@ -58,12 +59,19 @@ trgsw trgsw::encrypt_polynomial_int(secret_key skey, std::array<int, params::N> 
     return instance;
 }
 
+// encrypt_binary: mu in B -> trgsw
+trgsw trgsw::encrypt_binary(secret_key skey, bool mu) {
+    std::array<int, params::N> t = {};
+    t[0] = mu ? 1 : 0;
+    return encrypt_polynomial_int(skey, t);
+}
+
 // external product: (trgsw,trlwe) -> trlwe
-trlwe trgsw::external_product(trgsw trgsw, trlwe trlwe_in) {
+trlwe external_product(trgsw trgsw, trlwe trlwe_in) {
     constexpr size_t N = params::N;
     constexpr size_t l = params::l;
-    std::array<std::array<int, N>, l> decomposition_a = trlwe::decomposition(trlwe_in.a);
-    std::array<std::array<int, N>, l> decomposition_b = trlwe::decomposition(trlwe_in.b);
+    std::array<std::array<int, N>, l> decomposition_a = decomposition(trlwe_in.a);
+    std::array<std::array<int, N>, l> decomposition_b = decomposition(trlwe_in.b);
     trlwe trlwe_out;
 
     for(size_t i = 0; i < params::N; i++) {
@@ -105,17 +113,19 @@ trlwe trgsw::external_product(trgsw trgsw, trlwe trlwe_in) {
 }
 
 // cmux
-trlwe trgsw::cmux(trgsw trgsw, trlwe trlwe0, trlwe trlwe1) {
+trlwe cmux(trgsw trgsw, trlwe trlwe0, trlwe trlwe1) {
     constexpr size_t N = params::N;
-    trlwe trlwe_tmp;
+    trlwe trlwe_out;
     for(size_t j = 0; j < N; j++) {
-        trlwe_tmp.a[j] = trlwe1.a[j] - trlwe0.a[j];
-        trlwe_tmp.b[j] = trlwe1.b[j] - trlwe0.b[j];
+        trlwe_out.a[j] = trlwe0.a[j] - trlwe1.a[j];
+        trlwe_out.b[j] = trlwe0.b[j] - trlwe1.b[j];
     }
-    trlwe trlwe_out = trgsw::external_product(trgsw, trlwe_tmp);
+    trlwe_out = external_product(trgsw, trlwe_out);
     for(size_t j = 0; j < N; j++) {
-        trlwe_out.a[j] += trlwe0.a[j];
-        trlwe_out.b[j] += trlwe0.b[j];
+        trlwe_out.a[j] += trlwe1.a[j];
+        trlwe_out.b[j] += trlwe1.b[j];
     }
     return trlwe_out;
 }
+
+}  // namespace TFHE

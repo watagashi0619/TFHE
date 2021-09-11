@@ -1,12 +1,13 @@
-#include "trlwe.hpp"
-
 #include <array>
 #include <iostream>
 #include <random>
 
 #include "key.hpp"
 #include "params.hpp"
+#include "trlwe.hpp"
 #include "util.hpp"
+
+using namespace TFHE;
 
 // trlwe test
 void test_trlwe() {

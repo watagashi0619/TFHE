@@ -7,6 +7,8 @@
 #include "tlwe.hpp"
 #include "util.hpp"
 
+namespace TFHE {
+
 trlwe::trlwe() {}
 
 // encrypt_polynomial_torus: message in T_N[X] -> trlwe
@@ -82,7 +84,7 @@ std::array<bool, params::N> trlwe::decrypt_polynomial_binary(secret_key skey) {
 }
 
 // SampleExtractIndex: trlwe -> tlwe_lvl1 (=tlwe_lvl0^N)
-tlwe_lvl1 trlwe::sample_extract_index(trlwe trlwe, size_t k) {
+tlwe_lvl1 sample_extract_index(trlwe trlwe, size_t k) {
     constexpr size_t N = params::N;
     tlwe_lvl1 tlwe_lvl1;
     tlwe_lvl1.b = trlwe.b[k];
@@ -97,7 +99,7 @@ tlwe_lvl1 trlwe::sample_extract_index(trlwe trlwe, size_t k) {
 }
 
 // decomposition:a[X] in T_N[X] -> a_bar[X] in (Z_N[X])^l
-std::array<std::array<int, params::N>, params::l> trlwe::decomposition(std::array<torus, params::N> a) {
+std::array<std::array<int, params::N>, params::l> decomposition(std::array<torus, params::N> a) {
     constexpr size_t N = params::N;
     constexpr size_t l = params::l;
     constexpr size_t Bgbit = params::Bgbit;
@@ -130,3 +132,5 @@ std::array<std::array<int, params::N>, params::l> trlwe::decomposition(std::arra
     }
     return a_bar;
 }
+
+}  // namespace TFHE
