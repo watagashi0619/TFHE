@@ -27,7 +27,7 @@ std::array<T, N> poly_mult_by_X_k(std::array<T, N> poly_in, size_t k) {
         //    poly_out[i] = poly_in[(i - k) % N] * (i < k - N ? 1 : -1);
         //}
         for(size_t i = 0; i < 2 * N - k; i++) {
-            poly_out[i + l] = -poly_in[i];
+            poly_out[i + k - N] = -poly_in[i];
         }
         for(size_t i = 2 * N - k; i < N; i++) {
             poly_out[i + k - 2 * N] = poly_in[i];

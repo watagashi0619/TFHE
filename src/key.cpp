@@ -16,4 +16,4 @@ secret_key::secret_key() {
     }
 }
 
-}
+}  // namespace TFHE

@@ -16,7 +16,10 @@ constexpr uint32_t Bg = 1 << 6;
 constexpr uint32_t l = 3;
 
 // Blind Rotate Params
-
 constexpr uint32_t Nbit = 10;
+
+// Identity Key Switching Params
+constexpr uint32_t t = 8;
+constexpr uint32_t basebit = 2;
 
 }  // namespace params

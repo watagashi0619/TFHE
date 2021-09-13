@@ -6,8 +6,6 @@
 #include "key.hpp"
 #include "params.hpp"
 #include "tlwe.hpp"
-#include "trgsw.hpp"
-#include "trlwe.hpp"
 #include "util.hpp"
 
 using namespace TFHE;
@@ -24,7 +22,7 @@ void test_blind_rotate() {
         tlwe_lvl0 test_tlwe_lvl0 = tlwe_lvl0::encrypt_binary(skey, message);
         // gatebootstrapping tlwe_lvl0 to tlwe_lvl1
         tlwe_lvl1 res_tlwe_lvl1 = gatebootstrapping_tlwe_to_tlwe(test_tlwe_lvl0, *bkey);
-        // decrypt res
+        // decrypt res_tlwe_lvl1
         bool res = res_tlwe_lvl1.decrypt_binary(skey);
 
         if(message == res) {
