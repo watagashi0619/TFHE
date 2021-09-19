@@ -9,8 +9,9 @@
 
 namespace TFHE {
 
+// multiply poly_in[X] by X^k
 template <typename T, size_t N>
-std::array<T, N> poly_mult_by_X_k(std::array<T, N> poly_in, size_t k) {
+std::array<T, N> poly_mult_by_X_k(std::array<T, N>& poly_in, size_t k) {
     std::array<T, N> poly_out;
     if(k < N) {
         // for(size_t i = 0; i < N; i++) {
@@ -36,13 +37,14 @@ std::array<T, N> poly_mult_by_X_k(std::array<T, N> poly_in, size_t k) {
     return poly_out;
 }
 
-trlwe blind_rotate(tlwe_lvl0 tlwe, bootstrapping_key& bkey, trlwe test_vector) {
+// blind rotate: (tlwe_lvl0,bootstrapping_key,trlwe) -> trlwe
+trlwe blind_rotate(tlwe_lvl0& tlwe, bootstrapping_key& bkey, trlwe& test_vector) {
     constexpr size_t Nbit = params::Nbit;
     constexpr size_t n = params::n;
     constexpr size_t N = params::N;
 
     size_t b_tilde = 2 * N - ((tlwe.b + (1 << (31 - Nbit - 1))) >> (32 - Nbit - 1));
-    trlwe instance = trlwe();
+    trlwe instance;
     instance.a = poly_mult_by_X_k(test_vector.a, b_tilde);
     instance.b = poly_mult_by_X_k(test_vector.b, b_tilde);
     for(size_t i = 0; i < n; i++) {
@@ -55,11 +57,12 @@ trlwe blind_rotate(tlwe_lvl0 tlwe, bootstrapping_key& bkey, trlwe test_vector) {
     return instance;
 }
 
+// test vector is trlwe (0[X],mu[X])
 trlwe test_vector() {
     constexpr size_t N = params::N;
     constexpr torus mu = 1 << (32 - 3);
 
-    trlwe instance = trlwe();
+    trlwe instance;
     std::array<torus, N> m;
     for(size_t i = 0; i < N; i++) {
         m[i] = mu;
@@ -71,7 +74,8 @@ trlwe test_vector() {
     return instance;
 }
 
-tlwe_lvl1 gatebootstrapping_tlwe_to_tlwe(tlwe_lvl0 tlwe, bootstrapping_key& bkey) {
+// gatebootstrapping_tlwe_to_tlwe: (tlwe_lvl0,bootstrapping_key) -> tlwe_lvl1
+tlwe_lvl1 gatebootstrapping_tlwe_to_tlwe(tlwe_lvl0& tlwe, bootstrapping_key& bkey) {
     trlwe test_vec = test_vector();
     trlwe trlwe = blind_rotate(tlwe, bkey, test_vec);
     return sample_extract_index(trlwe, 0);

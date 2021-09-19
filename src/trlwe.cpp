@@ -9,12 +9,10 @@
 
 namespace TFHE {
 
-trlwe::trlwe() {}
-
 // encrypt_polynomial_torus: message in T_N[X] -> trlwe
-trlwe trlwe::encrypt_polynomial_torus(secret_key skey, std::array<torus, params::N> m) {
+trlwe trlwe::encrypt_polynomial_torus(secret_key& skey, std::array<torus, params::N> m) {
     constexpr size_t N = params::N;
-    trlwe instance = trlwe();
+    trlwe instance;
     for(size_t i = 0; i < N; i++) {
         instance.a[i] = torus_uniform_distribution();
     }
@@ -34,7 +32,7 @@ trlwe trlwe::encrypt_polynomial_torus(secret_key skey, std::array<torus, params:
 }
 
 // encrypt_polynomial_zero: zero message in T_N[X] -> trlwe
-trlwe trlwe::encrypt_polynomial_zero(secret_key skey) {
+trlwe trlwe::encrypt_polynomial_zero(secret_key& skey) {
     constexpr size_t N = params::N;
     std::array<torus, N> m;
     for(size_t i = 0; i < N; i++) {
@@ -44,7 +42,7 @@ trlwe trlwe::encrypt_polynomial_zero(secret_key skey) {
 }
 
 // encrypt_polynomial_binary: message in B_N[X] -> trlwe
-trlwe trlwe::encrypt_polynomial_binary(secret_key skey, std::array<bool, params::N> m) {
+trlwe trlwe::encrypt_polynomial_binary(secret_key& skey, std::array<bool, params::N> m) {
     const torus mu = 1 << (std::numeric_limits<torus>::digits - 3);
     constexpr size_t N = params::N;
     std::array<torus, N> m_binary;
@@ -59,7 +57,7 @@ trlwe trlwe::encrypt_polynomial_binary(secret_key skey, std::array<bool, params:
 }
 
 // decrypt_polynomial_binary: trlwe -> message in B_N[X]
-std::array<bool, params::N> trlwe::decrypt_polynomial_binary(secret_key skey) {
+std::array<bool, params::N> trlwe::decrypt_polynomial_binary(secret_key& skey) {
     constexpr size_t N = params::N;
     std::array<torus, N> s;
     for(size_t i = 0; i < N; i++) {
@@ -84,7 +82,7 @@ std::array<bool, params::N> trlwe::decrypt_polynomial_binary(secret_key skey) {
 }
 
 // SampleExtractIndex: trlwe -> tlwe_lvl1 (=tlwe_lvl0^N)
-tlwe_lvl1 sample_extract_index(trlwe trlwe, size_t k) {
+tlwe_lvl1 sample_extract_index(trlwe& trlwe, size_t k) {
     constexpr size_t N = params::N;
     tlwe_lvl1 tlwe_lvl1;
     tlwe_lvl1.b = trlwe.b[k];

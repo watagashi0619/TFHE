@@ -10,14 +10,13 @@ namespace TFHE {
 
 template <int lvl>
 struct tlwe {
-    tlwe();
     static constexpr size_t N();
     std::array<torus, N()> a;
     torus b;
-    static std::array<bool, N()> key(secret_key skey) noexcept;
-    static tlwe<lvl> encrypt_torus(secret_key skey, torus m);
-    static tlwe<lvl> encrypt_binary(secret_key skey, bool m);
-    bool decrypt_binary(secret_key skey);
+    static std::array<bool, N()> key(secret_key& skey) noexcept;
+    static tlwe<lvl> encrypt_torus(secret_key& skey, torus m);
+    static tlwe<lvl> encrypt_binary(secret_key& skey, bool m);
+    bool decrypt_binary(secret_key& skey);
 };
 
 template <int lvl>

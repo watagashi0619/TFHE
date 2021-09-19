@@ -32,7 +32,7 @@ inline bool binary_uniform_distribution() {
 // multiply in polynomial ring (naive)
 // multiply: (T_N[X],T_N[X]) -> T_N[X]
 template <typename T, typename T1, typename T2>
-std::array<T, params::N> multiply(std::array<T1, params::N> a, std::array<T2, params::N> b) {
+std::array<T, params::N> multiply(std::array<T1, params::N>& a, std::array<T2, params::N>& b) {
     size_t N = params::N;
     std::array<T, params::N> c;
     for(size_t i = 0; i < N; i++) {

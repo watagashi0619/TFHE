@@ -7,10 +7,10 @@
 #include "params.hpp"
 #include "tlwe.hpp"
 
-using namespace TFHE;
-/*
-tlwe_lvl0 identity_key_switching(tlwe_lvl1 tlwe_lvl1, key_switching_key &ks) {
+namespace TFHE {
 
+// identity_key_switching: (tlwe_lvl1,ks) -> tlwe_lvl0
+tlwe_lvl0 identity_key_switching(tlwe_lvl1& tlwe_lvl1, key_switching_key& ks) {
     constexpr size_t n = params::n;
     constexpr size_t N = params::N;
     constexpr size_t t = params::t;
@@ -22,7 +22,9 @@ tlwe_lvl0 identity_key_switching(tlwe_lvl1 tlwe_lvl1, key_switching_key &ks) {
         tlwe_lvl0_out.a[i] = 0;
     }
     tlwe_lvl0_out.b = tlwe_lvl1.b;
+
     torus prec_offset = 1 << (32 - (1 + basebit * t));
+
     for(size_t i = 0; i < N; i++) {
         torus a_bar = tlwe_lvl1.a[i] + prec_offset;
         for(size_t j = 0; j < t; j++) {
@@ -39,6 +41,6 @@ tlwe_lvl0 identity_key_switching(tlwe_lvl1 tlwe_lvl1, key_switching_key &ks) {
     }
 
     return tlwe_lvl0_out;
-
 }
-*/
+
+}  // namespace TFHE

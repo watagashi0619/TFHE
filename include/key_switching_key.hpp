@@ -16,7 +16,7 @@ struct key_switching_key {
 
     const std::array<std::array<tlwe_lvl0, ((1 << params::basebit) - 1)>, params::t> &operator[](size_t i) const;
 
-    key_switching_key(secret_key skey);
+    key_switching_key(secret_key &skey);
 };
 
 }  // namespace TFHE

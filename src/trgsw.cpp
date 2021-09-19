@@ -13,8 +13,6 @@
 // trlwe^(2l) = [(a_0[X],b_0[X]),...,(a_{2l-1}[X],b_{2l-1}[X])]
 namespace TFHE {
 
-trgsw::trgsw() {}
-
 trlwe& trgsw::operator[](size_t i) {
     return secret_message[i];
 }
@@ -24,12 +22,12 @@ const trlwe& trgsw::operator[](size_t i) const {
 }
 
 // encryot_polynomial_int: mu in Z_N[X] -> trgsw
-trgsw trgsw::encrypt_polynomial_int(secret_key skey, std::array<int, params::N> mu) {
+trgsw trgsw::encrypt_polynomial_int(secret_key& skey, std::array<int, params::N> mu) {
     constexpr size_t N = params::N;
     constexpr size_t l = params::l;
     constexpr size_t Bgbit = params::Bgbit;
 
-    trgsw instance = trgsw();
+    trgsw instance;
 
     for(size_t i = 0; i < 2 * l; i++) {
         instance[i] = trlwe::encrypt_polynomial_zero(skey);
@@ -60,14 +58,14 @@ trgsw trgsw::encrypt_polynomial_int(secret_key skey, std::array<int, params::N> 
 }
 
 // encrypt_binary: mu in B -> trgsw
-trgsw trgsw::encrypt_binary(secret_key skey, bool mu) {
+trgsw trgsw::encrypt_binary(secret_key& skey, bool mu) {
     std::array<int, params::N> t = {};
     t[0] = mu ? 1 : 0;
     return encrypt_polynomial_int(skey, t);
 }
 
 // external product: (trgsw,trlwe) -> trlwe
-trlwe external_product(trgsw trgsw, trlwe trlwe_in) {
+trlwe external_product(trgsw& trgsw, trlwe& trlwe_in) {
     constexpr size_t N = params::N;
     constexpr size_t l = params::l;
     std::array<std::array<int, N>, l> decomposition_a = decomposition(trlwe_in.a);
@@ -113,7 +111,7 @@ trlwe external_product(trgsw trgsw, trlwe trlwe_in) {
 }
 
 // cmux
-trlwe cmux(trgsw trgsw, trlwe trlwe0, trlwe trlwe1) {
+trlwe cmux(trgsw& trgsw, trlwe& trlwe0, trlwe& trlwe1) {
     constexpr size_t N = params::N;
     trlwe trlwe_out;
     for(size_t j = 0; j < N; j++) {

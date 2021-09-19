@@ -6,7 +6,7 @@
 #include "params.hpp"
 #include "tlwe.hpp"
 
-using namespace TFHE;
+namespace TFHE {
 
 std::array<std::array<tlwe_lvl0, ((1 << params::basebit) - 1)>, params::t> &key_switching_key::operator[](size_t i) {
     return ks[i];
@@ -16,7 +16,7 @@ const std::array<std::array<tlwe_lvl0, ((1 << params::basebit) - 1)>, params::t>
     return ks[i];
 }
 
-key_switching_key::key_switching_key(secret_key skey) {
+key_switching_key::key_switching_key(secret_key &skey) {
     constexpr size_t N = params::N;
     constexpr size_t t = params::t;
     constexpr size_t basebit = params::basebit;
@@ -29,3 +29,5 @@ key_switching_key::key_switching_key(secret_key skey) {
         }
     }
 }
+
+}  // namespace TFHE
