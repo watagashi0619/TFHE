@@ -22,4 +22,7 @@ constexpr uint32_t Nbit = 10;
 constexpr uint32_t t = 8;
 constexpr uint32_t basebit = 2;
 
+// TBSR Params
+constexpr size_t tbsr_width = 4;  // the maximum is 10
+
 }  // namespace params
