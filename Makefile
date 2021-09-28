@@ -1,5 +1,5 @@
 CC := g++
-CXXFLAGS = --sysroot=`xcrun --show-sdk-path` -std=c++20 -Wall -Wextra -pedantic
+CXXFLAGS = -std=c++20 -Wall -Wextra -pedantic
 INCLUDE = -I ./include
 SRCDIR := ./src
 TESTDIR := ./test
