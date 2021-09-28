@@ -18,7 +18,7 @@ The `make` command builds all tests. If you want to build only `test_hom_nand`, 
 ## Hom NAND Benchmark
 
 * naive implementation
-* run test 100 iterations (`./bin/bench_hom_nand`)
+* run test 100 iterations ([LOG](https://github.com/watagashi0619/TFHE/blob/a71e77ca6acfd6d9890c6cd564ff6fd03ad9c564/bench_hom_nand.log), `./bin/bench_hom_nand`)
   * average : 48114.3 ms
   * std : 211.12 ms
 * Machine Info
