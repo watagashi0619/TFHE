@@ -1,4 +1,5 @@
 #include <array>
+#include <cassert>
 #include <iostream>
 #include <random>
 
@@ -13,6 +14,7 @@ using namespace TFHE;
 void test_trlwe() {
     std::cout << "trlwe" << std::endl;
 
+    // secret key
     secret_key skey;
 
     // message
@@ -29,10 +31,7 @@ void test_trlwe() {
 
     for(size_t i = 0; i < params::N; i++) {
         // res should be equal to message
-        if(message[i] != res[i]) {
-            std::cout << "FAILED!" << std::endl;
-            exit(0);
-        }
+        assert(message[i] == res[i]);
     }
     std::cout << "pass" << std::endl;
 }

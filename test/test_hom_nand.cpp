@@ -1,4 +1,6 @@
 #include <array>
+#include <cassert>
+#include <chrono>
 #include <iostream>
 #include <random>
 
@@ -10,8 +12,6 @@
 #include "key_switching_key.hpp"
 #include "params.hpp"
 #include "tlwe.hpp"
-#include "trgsw.hpp"
-#include "trlwe.hpp"
 #include "util.hpp"
 
 using namespace TFHE;
@@ -36,11 +36,17 @@ void test_hom_nand() {
             tlwe_lvl0 tlwe_a = tlwe_lvl0::encrypt_binary(skey, i);
             tlwe_lvl0 tlwe_b = tlwe_lvl0::encrypt_binary(skey, j);
 
+            std::chrono::system_clock::time_point start, end;
+            // timer start
+            start = std::chrono::system_clock::now();
             // hom nand
             tlwe_lvl0 res = hom_nand(tlwe_a, tlwe_b, *bkey, *ks);
-
+            // timer stop
+            end = std::chrono::system_clock::now();
+            double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
             // show result
-            std::cout << tlwe_a.decrypt_binary(skey) << "|" << tlwe_b.decrypt_binary(skey) << "|" << res.decrypt_binary(skey) << std::endl;
+            assert((tlwe_a.decrypt_binary(skey) & tlwe_b.decrypt_binary(skey)) != res.decrypt_binary(skey));
+            std::cout << tlwe_a.decrypt_binary(skey) << "|" << tlwe_b.decrypt_binary(skey) << "|" << res.decrypt_binary(skey) << " " << elapsed << "[ms]" << std::endl;
         }
     }
 }

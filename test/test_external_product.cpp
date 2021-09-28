@@ -1,4 +1,5 @@
 #include <array>
+#include <cassert>
 #include <iostream>
 #include <random>
 
@@ -20,6 +21,7 @@ void test_external_product() {
     for(auto &x : a) {
         std::cout << "test trgsw mu=" << x << std::endl;
 
+        // secret key
         secret_key skey;
 
         // message (to be trlwe)
@@ -46,10 +48,7 @@ void test_external_product() {
         for(size_t i = 0; i < params::N; i++) {
             // when mu=1, res should be equal to message
             // when mu=-1, res shouldn't be equal to message
-            if((message[i] ^ res_decrypt[i]) == (x > 0)) {
-                std::cout << "FAILED!" << std::endl;
-                exit(0);
-            }
+            assert((message[i] ^ res_decrypt[i]) != (x > 0));
         }
         std::cout << "pass" << std::endl;
     }
